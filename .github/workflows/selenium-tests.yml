@@ -1,0 +1,51 @@
+name: Selenium Test Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Check Chrome version
+        run: google-chrome --version
+
+      - name: Run Selenium TestNG tests
+        env:
+          TLU_USERNAME: ${{ secrets.TLU_USERNAME }}
+          TLU_PASSWORD: ${{ secrets.TLU_PASSWORD }}
+          HEADLESS: true
+        run: mvn clean test
+
+      - name: Generate Allure report
+        if: always()
+        run: mvn allure:report
+
+      - name: Upload TestNG reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testng-surefire-reports
+          path: target/surefire-reports/
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin/
