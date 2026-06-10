@@ -2,12 +2,13 @@ package tests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.LoginPage;
+
+import trannguyendiemhanh.LoginPage;
 
 public class LoginTest extends BaseTest {
 
     private final String username = "2351067093";
-    private final String password = "079305013483TNDh";
+    private final String password = "079305013483";
 
     @Test(description = "Login with valid account")
     public void loginWithCorrectPassword() {
