@@ -8,7 +8,7 @@ import trannguyendiemhanh.LoginPage;
 public class LoginTest extends BaseTest {
 
     private final String username = "2351067093";
-    private final String password = "079305013483";
+    private final String password = "079305013483TNDh";
 
     @Test(description = "Login with valid account")
     public void loginWithCorrectPassword() {
