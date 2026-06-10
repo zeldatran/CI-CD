@@ -1,9 +1,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="TLU Login Test Suite">
-    <test name="Login Tests Case 1">
+<suite name="TLU Login Mixed Result Suite">
+    <test name="Login Tests Case 2">
         <groups>
             <run>
-                <include name="case1"/>
+                <include name="case2"/>
             </run>
         </groups>
         <classes>

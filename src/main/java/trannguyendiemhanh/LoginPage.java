@@ -1,19 +1,18 @@
 package trannguyendiemhanh;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class LoginPage {
     private final WebDriver driver;
     private final WebDriverWait wait;
-
-    private final By usernameInput = By.id("username");
-    private final By passwordInput = By.id("password");
-    private final By loginButton = By.xpath("//button[contains(text(),'Đăng nhập')]");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -22,17 +21,37 @@ public class LoginPage {
 
     public void open() {
         driver.get("https://sinhvien1.tlu.edu.vn/#/login");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameInput));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input")));
     }
 
     public void login(String username, String password) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameInput)).clear();
-        driver.findElement(usernameInput).sendKeys(username);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        List<WebElement> inputs = wait.until(d -> {
+            List<WebElement> visibleInputs = d.findElements(By.cssSelector("input")).stream()
+                    .filter(WebElement::isDisplayed)
+                    .toList();
+            return visibleInputs.size() >= 2 ? visibleInputs : null;
+        });
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(passwordInput)).clear();
-        driver.findElement(passwordInput).sendKeys(password);
+        WebElement usernameInput = inputs.get(0);
+        WebElement passwordInput = inputs.get(1);
 
-        wait.until(ExpectedConditions.elementToBeClickable(loginButton)).click();
+        typeValue(usernameInput, username);
+        typeValue(passwordInput, password);
+
+        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button")));
+        loginButton.click();
+    }
+
+    private void typeValue(WebElement element, String value) {
+        element.click();
+        element.clear();
+        element.sendKeys(value);
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
+                        + "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+                element);
     }
 
     public boolean isLoginSuccessful() {

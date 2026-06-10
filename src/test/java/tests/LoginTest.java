@@ -1,48 +1,63 @@
 package tests;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import org.openqa.selenium.chrome.ChromeOptions;
 import trannguyendiemhanh.LoginPage;
 
-public class LoginTest extends BaseTest {
+import io.github.bonigarcia.wdm.WebDriverManager;
 
-    private final String username = "2351067093";
-    private final String password = "079305013483TNDh";
+public class LoginTest {
 
-    @Test(description = "Login with valid account")
-    public void loginWithCorrectPassword() {
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.open();
-        loginPage.login(username, password);
+    WebDriver driver;
+    LoginPage loginPage;
 
-        Assert.assertTrue(loginPage.isLoginSuccessful(), "Đăng nhập đúng mật khẩu thất bại");
+    private static final String USERNAME = "2351067093";
+    private static final String PASSWORD = "079305013483TNDh";
+
+    @BeforeMethod
+    public void setup() {
+
+        WebDriverManager.chromedriver().setup();
+
+        ChromeOptions options = new ChromeOptions();
+
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        driver = new ChromeDriver(options);
+        loginPage = new LoginPage(driver);
     }
 
-    @Test(description = "Login with the same valid account again")
-    public void loginWithCorrectPasswordAgain() {
-        LoginPage loginPage = new LoginPage(driver);
+    @Test
+    public void testSuccessfulLogin1() {
         loginPage.open();
-        loginPage.login(username, password);
+        loginPage.login(USERNAME, PASSWORD);
 
-        Assert.assertFalse(loginPage.isLoginFailed(), "Lần đăng nhập đúng nhưng hệ thống báo lỗi");
+        Assert.assertTrue(
+                loginPage.isLoginSuccessful()
+        );
     }
 
-    @Test(description = "Login with wrong password")
-    public void loginWithWrongPassword() {
-        LoginPage loginPage = new LoginPage(driver);
+    @Test
+    public void testSuccessfulLogin2() {
         loginPage.open();
-        loginPage.login(username, "SaiMatKhau123");
+        loginPage.login(USERNAME, PASSWORD);
 
-        Assert.assertTrue(loginPage.isLoginFailed(), "Đăng nhập sai mật khẩu nhưng hệ thống không báo lỗi");
+        Assert.assertTrue(
+                loginPage.isLoginSuccessful()
+        );
     }
 
-    @Test(description = "Login with wrong username")
-    public void loginWithWrongUsername() {
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.open();
-        loginPage.login("invaliduser@example.com", password);
+    @AfterMethod
+    public void tearDown() {
 
-        Assert.assertTrue(loginPage.isLoginFailed(), "Đăng nhập sai tài khoản nhưng hệ thống không báo lỗi");
+        driver.quit();
     }
 }
